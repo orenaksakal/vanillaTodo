@@ -20,12 +20,12 @@ var todoApp = {
             todoText: todoText,
             completed: false,
         });
-        this.displayTodos();
+        view.displayTodos();
     },
 
     changeTodo: function (todoPos, todoText) {
         this.todos[todoPos].todoText = todoText;
-        this.displayTodos();
+        view.displayTodos();
     },
 
     deleteTodo: function (todoPos) {
@@ -101,3 +101,15 @@ var handlers = {
     }
 
 }
+
+  var view = {
+    displayTodos: function(){
+        var todosUl = document.querySelector('ul');
+        todosUl.innerHTML= '';
+        for (var i =0; i < todoApp.todos.length; i++){
+            var todoLi = document.createElement('li');
+            todoLi.textContent = todoApp.todos[i].todoText;
+            todosUl.appendChild(todoLi);
+        }
+    }
+  };
