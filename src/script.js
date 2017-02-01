@@ -1,36 +1,22 @@
 var todoApp = {
     todos: [],
 
-    displayTodos: function () {
-        if (this.todos.length == 0) {
-            console.log('NO TODOS HERE');
-        } else {
-            for (var i = 0; i < this.todos.length; i++) {
-                if (this.todos[i].completed === true) {
-                    console.log('(x)', this.todos[i].todoText);
-                } else {
-                    console.log('( )', this.todos[i].todoText);
-                }
-            }
-        }
-    },
-
     addTodo: function (todoText) {
+        if (todoText == '' || todoText == null) {
+            return;
+        }
         this.todos.push({
             todoText: todoText,
             completed: false,
         });
-        view.displayTodos();
     },
 
     changeTodo: function (todoPos, todoText) {
         this.todos[todoPos].todoText = todoText;
-        view.displayTodos();
     },
 
     deleteTodo: function (todoPos) {
         this.todos.splice(todoPos, 1);
-        this.displayTodos();
     },
 
     toggleAll: function () {
@@ -53,30 +39,25 @@ var todoApp = {
 
             }
         }
-        this.displayTodos();
+        view.displayTodos();
     },
     toggleTodo: function (todoPos) {
         var todo = this.todos[todoPos];
         todo.completed = !todo.completed;
-        this.displayTodos();
     }
 
 };
 
 var handlers = {
-    displayTodos: function () {
-        todoApp.displayTodos();
-    },
-
     toggleAll: function () {
         todoApp.toggleAll();
     },
 
     addTodo: function () {
         var addTodoTextInput = document.getElementById('addTodoTextInput');
-
         todoApp.addTodo(addTodoTextInput.value);
         addTodoTextInput.value = '';
+        view.displayTodos();
     },
 
     changeTodo: function () {
@@ -85,31 +66,59 @@ var handlers = {
 
         todoApp.changeTodo(changeTodoPosInput.valueAsNumber, changeTodoTextInput.value);
         changeTodoPosInput.value, changeTodoTextInput.value = '';
-
+        view.displayTodos();
 
     },
 
-    deleteTodo: function () {
-        var deleteTodoPosInput = document.getElementById('deleteTodoPosInput');
-        todoApp.deleteTodo(deleteTodoPosInput.valueAsNumber);
+    deleteTodo: function (position) {
+        todoApp.deleteTodo(position);
+        view.displayTodos();
 
     },
 
     toggleTodo: function () {
         var toggleTodoPosInput = document.getElementById('toggleTodoPosInput');
         todoApp.toggleTodo(toggleTodoPosInput.valueAsNumber);
+        view.displayTodos();
     }
 
 }
 
-  var view = {
-    displayTodos: function(){
+var view = {
+    displayTodos: function () {
         var todosUl = document.querySelector('ul');
-        todosUl.innerHTML= '';
-        for (var i =0; i < todoApp.todos.length; i++){
+        todosUl.innerHTML = '';
+        for (var i = 0; i < todoApp.todos.length; i++) {
             var todoLi = document.createElement('li');
-            todoLi.textContent = todoApp.todos[i].todoText;
+            var todo = todoApp.todos[i];
+            var todoTextWithCompletion = '';
+
+            if (todo.completed) {
+                todoTextWithCompletion = '(x) ' + todo.todoText;
+            } else {
+                todoTextWithCompletion = '( ) ' + todo.todoText;
+            }
+            todoLi.id = i;
+            todoLi.textContent = todoTextWithCompletion;
+            todoLi.appendChild(this.addDeleteButton());
             todosUl.appendChild(todoLi);
         }
+    },
+    addDeleteButton: function () {
+        var deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.className = 'deleteButton';
+        return deleteButton;
+    },
+    setupEventListeners: function () {
+
+        var todosUl = document.querySelector('ul');
+        todosUl.addEventListener('click', function (event) {
+            var elementClicked = event.target;
+            if (elementClicked.className == 'deleteButton') {
+                handlers.deleteTodo(parseInt(elementClicked.parentNode.id));
+            }
+        });
     }
-  };
+};
+view.setupEventListeners();
