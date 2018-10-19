@@ -1,3 +1,7 @@
+/**
+ * 10.01.2015 by Oren Aksakal
+ */
+
 var todoApp = {
     todos: [],
 
